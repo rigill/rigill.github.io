@@ -1,16 +1,31 @@
 import './index.css'
 
-const SQUARE_SIZE = 25
+const SQUARE_SIZE = 10
 
-const PALETTE = ['#333333', '#111111']
+const PALETTE = [
+  '#010101',
+  '#000000', 
+  '#1b1b2f', 
+]
+
+function randomBetween(lower, higher) {
+  return (Math.floor(Math.random() * higher) + lower)
+}
+
+function pickColours() {
+  if(randomBetween(1, 50) === 1) {
+    return PALETTE[2]
+  }
+  return PALETTE[randomBetween(1, 2) - 1]
+}
 
 function setupCanvas() {
   const body = document.body
   const canvas = document.createElement('canvas')
-  //const width = window.innerWidth
-  //const height = window.innerHeight
-  const width = 500
-  const height = 500
+  const width = window.outerWidth + 15
+  const height = window.innerHeight
+
+  const gridCount = Math.floor(width / SQUARE_SIZE)
 
   const fitToWindow = () => {
     canvas.width = width
@@ -23,7 +38,8 @@ function setupCanvas() {
     canvas,
     context: canvas.getContext('2d'),
     width,
-    height
+    height,
+    gridCount
   }
 }
 
@@ -34,19 +50,19 @@ function makeSquare({context, x, y}) {
 
   this.draw = () => {
     context.save()
-    context.fillStyle = PALETTE[0]
+    context.fillStyle = pickColours()
     context.fillRect(this.x, this.y, this.size, this.size)
     context.restore()
   }
 }
 
-function createGrid () {
+function createGrid (gridCount) {
   const points = []
-  const count = 10
+  const count = gridCount
   for(let x = 0; x < count; x++) {
     for(let y = 0; y < count; y++) {
-      const u = count <= 1 ? 0.5 : x / (count -1)
-      const v = count <= 1 ? 0.5 : y / (count -1)
+      const u = x * SQUARE_SIZE
+      const v = y * SQUARE_SIZE
 
       points.push([u, v])
     }
@@ -55,14 +71,13 @@ function createGrid () {
 }
 
 function main() {
-  const {context, width, height} = setupCanvas()
+  const {context, width, height, gridCount} = setupCanvas()
 
-  const points = createGrid()
+  const points = createGrid(gridCount)
+  console.log('points', points)
   context.clearRect(0, 0, width, height)
   
-  points.forEach(([u,v]) => {
-    const x = u * width 
-    const y = v * height 
+  points.forEach(([x,y]) => {
     const square = new makeSquare({context, x, y})
     square.draw()
   })
