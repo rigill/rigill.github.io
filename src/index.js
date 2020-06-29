@@ -31,9 +31,9 @@ function setupCanvas() {
     canvas.width = width
     canvas.height = height
   }
-  body.append(canvas)
+
   fitToWindow()
-  //window.addEventListener('resize', fitToWindow)
+  
   return {
     canvas,
     context: canvas.getContext('2d'),
